@@ -1,0 +1,49 @@
+{
+  "name": "@achavarriafh/create-npm-package",
+  "version": "1.0.0",
+  "description": "Initializer for creating npm-packages easily. This tool is intended to be used for creating business logic packages for Sunrun CBA...",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "build.tsc": "tsc",
+    "build.bundle": "rollup -c",
+    "minify": "terser --compress --mangle --toplevel --output index.js -- index.js",
+    "build": "npm run build.tsc && npm run build.bundle && npm run minify",
+    "build.dev": "npm run build.tsc && npm run build.bundle",
+    "dev": "npm run build.dev && npm start",
+    "version": "npm build",
+    "release": "np"
+  },
+  "engines": {
+    "node": ">=10.10.0",
+    "npm": ">=6.0.0"
+  },
+  "bin": {
+    "create-npm-package": "index.js"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "18.0.0",
+    "@rollup/plugin-json": "4.1.0",
+    "@rollup/plugin-node-resolve": "11.2.1",
+    "@types/cli-spinner": "0.2.0",
+    "@types/node": "14.14.37",
+    "@types/yauzl": "2.9.1",
+    "cli-spinner": "0.2.10",
+    "colorette": "1.2.2",
+    "https-proxy-agent": "5.0.0",
+    "np": "7.4.0",
+    "replace-in-file": "6.2.0",
+    "rollup": "2.43.0",
+    "sisteransi": "1.0.5",
+    "terser": "5.6.1",
+    "typescript": "4.2.3",
+    "yauzl": "2.10.0"
+  },
+  "author": "AchavarriaFH",
+  "license": "ISC",
+  "keywords": [
+    "create-app",
+    "cli"
+  ],
+  "dependencies": {}
+}
