@@ -97,15 +97,60 @@ async function prepare(starter: Starter) {
   return async (projectName: string) => {
     const filePath = join(baseDir, projectName);
     await renameAsync(tmpPath, filePath);
-    await replaceInFile({
-      files: join(filePath, '*'),
-      from: /my-npm-package/g,
-      to: projectName,
-    });
+    await getRefactorCommand(starter.name)(filePath, projectName);
     setTmpDirectory(null);
   };
 }
 
 function validateProjectName(projectName: string) {
   return !/[^a-zA-Z0-9-]/.test(projectName);
+}
+
+function getRefactorCommand(starterName: string) {
+  switch (starterName) {
+    case 'library':
+      return refactorLibraryTemplate;
+  
+    default:
+      return () => {};
+  }
+}
+
+/**
+  * Rename all files for library template
+  * https://github.com/amurilloFH/npm-package-template
+  * @param filePath 
+  * @param projectName 
+  */
+async function refactorLibraryTemplate(filePath: string, projectName: string) {
+  const clearAndUpper = (text: string) => text.replace(/-/, '').toUpperCase();
+  const toCamelCase   = (text: string) => text.replace(/-\w/g, clearAndUpper);
+  const toPascalCase  = (text: string) => text.replace(/(^\w|-\w)/g, clearAndUpper);
+
+  // rename default files
+  await renameAsync(
+    join(filePath, 'src/my-npm-package.ts'),
+    join(filePath, `src/${projectName}.ts`),
+  );
+  await renameAsync(
+    join(filePath, 'src/my-npm-package.test.ts'),
+    join(filePath, `src/${projectName}.test.ts`),
+  );
+
+  // replace imports/classes/variables to match project name
+  await replaceInFile({
+    files: [join(filePath, 'src/*.ts'), join(filePath, 'package*.json')],
+    from: /my-npm-package/g,
+    to: projectName,
+  });
+  await replaceInFile({
+    files: join(filePath, 'src/*.ts'),
+    from: /MyNpmPackage/g,
+    to: toPascalCase(projectName)
+  });
+  await replaceInFile({
+    files: join(filePath, 'src/*.ts'),
+    from: /myNpmPackage/g,
+    to: toCamelCase(projectName)
+  });
 }
